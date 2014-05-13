@@ -9,6 +9,7 @@ $response = (new Curl)->exec($url . '?' . http_build_query($data), [CURLOPT_ENCO
 // echo $response;
 
 $obj = json_decode($response);
+$items = $obj->{'items'}[0];
 // print "total comments:";
 // print $obj->{'items'}[0]->{"total_comments"};
 $timestamp = date("Y:m:d H:i:s");
@@ -17,7 +18,7 @@ $timestamp = date("Y:m:d H:i:s");
 $db = PDODatabaseObject();
 
 $stmt = $db->prepare("INSERT INTO `stats` (`total_questions`, `total_unanswered`, `total_accepted`, `total_answers`, `questions_per_minute`, `total_comments`, `total_votes`, `total_badges`, `badges_per_minute`, `total_users`, `new_active_users`, `site`) VALUES(:total_questions,:total_unanswered,:total_accepted,:total_answers,:questions_per_minute,:total_comments,:total_votes,:total_badges,:badges_per_minute,:total_users,:new_active_users,:site)");
-$stmt->execute(array(':total_questions' => $obj->{'items'}[0]->{'total_questions'}, ':total_unanswered' => $obj->{'items'}[0]->{'total_unanswered'}, ':total_accepted' => $obj->{'items'}[0]->{'total_accepted'}, ':total_answers' => $obj->{'items'}[0]->{'total_answers'}, ':questions_per_minute' => $obj->{'items'}[0]->{'questions_per_minute'}, ':total_comments' => $obj->{'items'}[0]->{'total_comments'}, ':total_votes' => $obj->{'items'}[0]->{'total_votes'}, ':total_badges' => $obj->{'items'}[0]->{'total_badges'}, ':badges_per_minute' => $obj->{'items'}[0]->{'badges_per_minute'}, ':total_users' => $obj->{'items'}[0]->{'total_users'}, ':new_active_users' => $obj->{'items'}[0]->{'new_active_users'}, ':site' => 'space'));
+$stmt->execute(array(':total_questions' => $items->{'total_questions'}, ':total_unanswered' => $items->{'total_unanswered'}, ':total_accepted' => $items->{'total_accepted'}, ':total_answers' => $items->{'total_answers'}, ':questions_per_minute' => $items->{'questions_per_minute'}, ':total_comments' => $items->{'total_comments'}, ':total_votes' => $items->{'total_votes'}, ':total_badges' => $items->{'total_badges'}, ':badges_per_minute' => $items->{'badges_per_minute'}, ':total_users' => $items->{'total_users'}, ':new_active_users' => $items->{'new_active_users'}, ':site' => 'space'));
 $affected_rows = $stmt->rowCount();
 
 echo $affected_rows;
