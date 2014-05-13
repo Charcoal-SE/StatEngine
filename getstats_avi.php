@@ -1,6 +1,6 @@
 <?php
 
-include 'credentials.php';
+include 'base.php';
 
 $url = 'https://api.stackexchange.com/2.1/info';
 $data = array("site" => 'aviation', "key" => "WFiOehV2MzNIFYyUbvtNRg((");
@@ -15,16 +15,14 @@ $obj = json_decode($response);
 $timestamp = date("Y:m:d H:i:s");
 // var_dump(json_decode($response, true));
 
-$dbhost = MySQLHost(); // this will ususally be 'localhost', but can sometimes differ  
-$dbname = MySQLDB(); // the name of the database that you are going to use for this project  
-$dbuser = MySQLUsername(); // the username that you created, or were given, to access your database  
-$dbpass = MySQLPassword(); // the password that you created, or were given, to access your database  
+$db = PDODatabaseObject();
 
-mysql_connect($dbhost, $dbuser, $dbpass) or die("MySQL Error: " . mysql_error());  
-mysql_select_db($dbname) or die("MySQL Error: " . mysql_error()); 
+$stmt = $db->prepare("INSERT INTO `stats` (`total_questions`, `total_unanswered`, `total_accepted`, `total_answers`, `questions_per_minute`, `total_comments`, `total_votes`, `total_badges`, `badges_per_minute`, `total_users`, `new_active_users`, `site`) VALUES(:total_questions,:total_unanswered,:total_accepted,:total_answers,:questions_per_minute,:total_comments,:total_votes,:total_badges,:badges_per_minute,:total_users,:new_active_users,:site)");
+$stmt->execute(array(':total_questions' => $obj->{'items'}[0]->{'total_questions'}, ':total_unanswered' => $obj->{'items'}[0]->{'total_unanswered'}, ':total_accepted' => $obj->{'items'}[0]->{'total_accepted'}, ':total_answers' => $obj->{'items'}[0]->{'total_answers'}, ':questions_per_minute' => $obj->{'items'}[0]->{'questions_per_minute'}, ':total_comments' => $obj->{'items'}[0]->{'total_comments'}, ':total_votes' => $obj->{'items'}[0]->{'total_votes'}, ':total_badges' => $obj->{'items'}[0]->{'total_badges'}, ':badges_per_minute' => $obj->{'items'}[0]->{'badges_per_minute'}, ':total_users' => $obj->{'items'}[0]->{'total_users'}, ':new_active_users' => $obj->{'items'}[0]->{'new_active_users'}, ':site' => 'aviation'));
+$affected_rows = $stmt->rowCount();
 
-mysql_query("INSERT INTO `stats` (`total_questions`, `total_unanswered`, `total_accepted`, `total_answers`, `questions_per_minute`, `total_comments`, `total_votes`, `total_badges`, `badges_per_minute`, `total_users`, `new_active_users`, `site`) VALUES (" . $obj->{'items'}[0]->{'total_questions'} . ", " . $obj->{'items'}[0]->{'total_unanswered'} . ", " . $obj->{'items'}[0]->{'total_accepted'} . ", " . $obj->{'items'}[0]->{'total_answers'} . ", " . $obj->{'items'}[0]->{'questions_per_minute'} . ", " . $obj->{'items'}[0]->{'total_comments'} . ", " . $obj->{'items'}[0]->{'total_votes'} . ", " . $obj->{'items'}[0]->{'total_badges'} . ", " . $obj->{'items'}[0]->{'badges_per_minute'} . ", " . $obj->{'items'}[0]->{'total_users'} . ", " . $obj->{'items'}[0]->{'new_active_users'} . ", 'aviation'" . ");");
- 
+echo $affected_rows;
+
 class Curl
 {
   protected $info = [];
